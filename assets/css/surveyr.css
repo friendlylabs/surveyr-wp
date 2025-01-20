@@ -1,0 +1,34 @@
+.sd-root-modern .sd-container-modern__title {
+    display: none !important;
+}
+
+.sd-body.sd-body--static {
+    padding:0 5px 20px 5px !important;
+}
+
+.surveyrLoader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.loading-icon {
+    animation: spin 2s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-text {
+    font-size: 16px;
+    color: #555;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
