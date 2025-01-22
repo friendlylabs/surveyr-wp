@@ -47,15 +47,25 @@ function surveyr_form_render(string $formId): string
 {
     surveyr_load_assets();
 
-    $email = carbon_get_theme_option('surveyr_email') ?: throw new RuntimeException('Email not configured.');
     $baseUrl = carbon_get_theme_option('surveyr_instance_url') ?: throw new RuntimeException('Instance URL not configured.');
+    $passphrase = carbon_get_theme_option('surveyr_passphrase') ?: throw new RuntimeException('Passphrase not configured.');
+    $bearerToken = carbon_get_theme_option('surveyr_api_key') ?: throw new RuntimeException('API Key not configured.');
 
     try {
-        $form = Fetch::get("$baseUrl/api/forms/fetch/$formId", [
-            'body' => ['email' => $email],
+        $form = Fetch::get("$baseUrl/api/forms/fetch/$formId", [ 
+            'headers' => [
+                'Authorization' => "Bearer $bearerToken",
+            ],
+            'body' => [
+                'passphrase' => $passphrase,
+            ],
         ]);
 
         $formData = json_decode($form['body'], false, flags: JSON_THROW_ON_ERROR);
+        if(!$formData->status) {
+            return '<p>Error loading form. Please try again later.</p>';
+        }
+
         return Template::view('form', [
             'formId' => $formId,
             'render' => $formData,
@@ -64,8 +74,7 @@ function surveyr_form_render(string $formId): string
     
     catch (Throwable $e) {
         error_log('Failed to fetch form: ' . $e->getMessage());
-        return '<p>Error loading form. Please try again later.</p>.
-            <pre>' . $e->getMessage() . '</pre>';
+        return '<p>Error loading form. Please try again later.</p>.';
     }
 }
 
@@ -79,7 +88,7 @@ function surveyr_load_assets(): void
     // this is to include the assets for the form only once
     if(defined('surveyr_assets_loaded')) return;
     define('surveyr_assets_loaded', true);
-    
+
     $basePath = plugin_dir_url(__FILE__) . '../assets/';
 
     // CSS assets
@@ -105,8 +114,9 @@ function surveyr_form_submit_callback(WP_REST_Request $request): WP_REST_Respons
 {
     // fetch the necessary configuration options
     $baseUrl = carbon_get_theme_option('surveyr_instance_url') ?: throw new RuntimeException('Instance URL not configured.');
-    $email = carbon_get_theme_option('surveyr_email') ?: throw new RuntimeException('Email not configured.');
-    $apiKey = carbon_get_theme_option('surveyr_api_key') ?: throw new RuntimeException('API Key not configured.');
+
+    $passphrase = carbon_get_theme_option('surveyr_passphrase') ?: throw new RuntimeException('Passphrase not configured.');
+    $bearerToken = carbon_get_theme_option('surveyr_api_key') ?: throw new RuntimeException('API Key not configured.');
 
 
     // validate request
@@ -123,9 +133,13 @@ function surveyr_form_submit_callback(WP_REST_Request $request): WP_REST_Respons
     // Send the form submission to the Surveyr instance
     try {
         $response = Fetch::post("$baseUrl/api/collection/store", [
+            'headers' => [
+                'Authorization' => "Bearer $bearerToken",
+            ],
+            
             'body' => [
-                'email'   => $email,
                 'formId'  => $formId,
+                'passphrase' => $passphrase,
                 'content' => json_encode($content, JSON_THROW_ON_ERROR),
             ],
         ]);
