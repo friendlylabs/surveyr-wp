@@ -23,12 +23,12 @@ function create_options_page() :void
                 ->set_help_text('The URL of the Surveyr instance you want to connect to.')
                 ->set_attribute('placeholder', 'https://surveyr.example.com'),
 
-            # Email Address
-            Field::make('text', 'surveyr_email', 'Email Address')
-                ->set_help_text('The email address of the User you want to connect with.')
-                ->set_attribute('placeholder', 'username@email.com'),
+            # passphrase
+            Field::make('text', 'surveyr_passphrase', 'Passphrase')
+                ->set_help_text('The passphrase you used to encrypt the key.')
+                ->set_attribute('placeholder', 'your-passphrase'),
 
-            # API Key
+            # Secret Key
             Field::make('text', 'surveyr_api_key', 'Secret Key')
                 ->set_help_text('The secret key of the Surveyr instance you want to connect to.')
                 ->set_attribute('placeholder', 'your-secret-key')
