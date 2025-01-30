@@ -16,7 +16,7 @@ Note: This plugin depends on the premium API plugin for surveyr, which is still 
 
 1. Install the plugin on your WordPress website.
 2. Configure your Surveyr API credentials.
-3. Embed forms using the shortcode `[surveyr_form id="your-form-id"]` or the Surveyr block.
+3. Embed forms using the shortcode `[surveyr_form form_id="your-form-id"]` or the Surveyr block.
 
 #### Contributing
 
